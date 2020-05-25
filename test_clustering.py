@@ -90,7 +90,7 @@ def run_trader(data):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('../../daily_data_testing.csv').set_index('TIMESTAMP')
+    df = pd.read_csv('../../daily_data.csv').set_index('TIMESTAMP')
     df.index = pd.to_datetime(df.index)
     outperforms = []
     for isin in df.columns:
