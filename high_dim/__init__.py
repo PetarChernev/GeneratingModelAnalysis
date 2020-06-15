@@ -5,5 +5,6 @@ Concrete implementations consist of different rolling computations, which produc
 representation of a rolling window of the data.
 """
 
-from .returns_distribution import ReturnsDistribution
-from .high_dim import HighDim
+from .interface import HighDim
+from .distribution import Distribution
+from .spectrum import Spectrum

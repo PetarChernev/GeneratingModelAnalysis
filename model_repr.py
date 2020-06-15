@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 import numpy as np
+from latex import matrix
 
 from high_dim import HighDim
 
@@ -17,17 +18,20 @@ class ModelRepresentation:
         self.models = None
 
     def represent(self, timeseries):
+        high_dim = self.high_dim.represent(timeseries)
+        # dimensionality reduction algorithms expect the have the features as columns
+        # we assume that the number of features is smaller than the number of data points
+        # if we have the features as rows, transpose
+        if high_dim.shape[0] < high_dim.shape[1]:
+            high_dim = high_dim.T
         if hasattr(self.dimensionality_reduction, 'fit_transform'):
             assert callable(self.dimensionality_reduction.fit_transform)
-            self.models = self.dimensionality_reduction.fit_transform(self.high_dim.represent(timeseries))
+            self.models = self.dimensionality_reduction.fit_transform(high_dim)
         else:
-            rolling = self.high_dim.represent(timeseries)
-            self.models = self.dimensionality_reduction.fit(rolling).transform(rolling)
+            self.models = self.dimensionality_reduction.fit(high_dim).transform(high_dim)
         return self.models
 
     def plot(self):
-        print(self.dimensionality_reduction.components_)
-
         fig = plt.figure(figsize=(16, 12))
         ax = fig.add_subplot(111, projection='3d')
         ax.scatter(*zip(*self.models), cmap=plt.cm.get_cmap('viridis'), c=np.linspace(0, 1, self.models.shape[0]))
@@ -35,4 +39,5 @@ class ModelRepresentation:
         ax.set_ylabel("y")
         ax.set_zlabel("z")
         ax.set_title('PCA of distribution evolution, starts from yellow')
+        plt.tight_layout()
         plt.show()
